@@ -1,0 +1,38 @@
+# Nome do nosso workflow, que aparecerá na aba "Actions" do GitHub
+name: CI Backend
+
+# Define os "gatilhos" que iniciam este workflow
+on:
+  # Roda quando um push é feito para a branch main
+  push:
+    branches: [ "main" ]
+  # Roda quando um Pull Request é aberto (ou atualizado) para a branch main
+  pull_request:
+    branches: [ "main" ]
+
+# Define as "tarefas" que o workflow vai executar
+jobs:
+  # Nomeamos nossa tarefa de "build"
+  build:
+    # A tarefa vai rodar em uma máquina virtual (runner) com a versão mais recente do Ubuntu
+    runs-on: ubuntu-latest
+
+    # Define os "passos" que a tarefa irá executar em sequência
+    steps:
+      # Passo 1: Usa uma "action" pré-pronta para baixar o código do seu repositório para o runner
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Passo 2: Usa outra action para configurar o ambiente Node.js na versão 18
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      # Passo 3: Roda comandos no terminal do runner para instalar as dependências
+      - name: Install dependencies
+        run: npm install
+
+      # Passo 4: Roda o comando para gerar o cliente Prisma
+      - name: Generate Prisma client
+        run: npx prisma generate
