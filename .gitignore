@@ -1,0 +1,12 @@
+# Dependências do Node.js
+node_modules/
+
+# Arquivos de ambiente com senhas e segredos
+.env
+
+# Logs
+*.log
+npm-debug.log*
+
+# Pastas de sistema
+.DS_Store
