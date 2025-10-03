@@ -6,7 +6,6 @@ const getAllTasks = async (req, res) => {
     const tasks = await taskService.findAllTasks(userId);
     res.status(200).json(tasks);
   } catch (error) {
-    console.error("Mensagem de erro:", error);
     console.error("Erro ao buscar tarefas:", error);
     res.status(500).json({ message: 'Erro interno do servidor' });
   }
@@ -14,11 +13,10 @@ const getAllTasks = async (req, res) => {
 
 const createTask = async (req, res) => {
   try {
-    const userId = req.user.id; // <--- Pega o ID do usuário logado
-    const newTask = await taskService.createTask(req.body, userId); // <--- Passa para o serviço
+    const userId = req.user.id;
+    const newTask = await taskService.createTask(req.body, userId);
     res.status(201).json(newTask);
   } catch (error) {
-    console.error("Mensagem de erro:", error);
     console.error("Erro ao criar tarefa:", error);
     res.status(500).json({ message: 'Erro ao criar tarefa' });
   }
@@ -30,7 +28,6 @@ const updateTask = async (req, res) => {
     const updatedTask = await taskService.updateTask(id, req.body);
     res.status(200).json(updatedTask);
   } catch (error) {
-    console.error("Mensagem de erro:", error);
     console.error("Erro ao atualizar tarefa:", error);
     res.status(500).json({ message: 'Erro ao atualizar tarefa' });
   }
