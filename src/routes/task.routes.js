@@ -3,6 +3,7 @@ const router = express.Router();
 const taskController = require('../controllers/task.controller');
 const authenticateToken = require('../middleware/auth.middleware');
 
+// Aplica o guarda a TODAS as rotas deste arquivo
 router.use(authenticateToken);
 
 router.get('/', taskController.getAllTasks);

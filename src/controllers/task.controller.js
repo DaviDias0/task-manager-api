@@ -22,12 +22,18 @@ const createTask = async (req, res) => {
   }
 };
 
+// --- FUNÇÃO MODIFICADA ---
 const updateTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const updatedTask = await taskService.updateTask(id, req.body);
+    const userId = req.user.id; // Pega o ID do usuário logado do token
+    const updatedTask = await taskService.updateTask(id, userId, req.body);
     res.status(200).json(updatedTask);
   } catch (error) {
+    // Retorna um erro específico se a tarefa não for encontrada ou não pertencer ao usuário
+    if (error.message.includes('não encontrada')) {
+      return res.status(404).json({ message: error.message });
+    }
     console.error("Erro ao atualizar tarefa:", error);
     res.status(500).json({ message: 'Erro ao atualizar tarefa' });
   }
@@ -36,7 +42,8 @@ const updateTask = async (req, res) => {
 const deleteTask = async (req, res) => {
   try {
     const { id } = req.params;
-    await taskService.deleteTask(id);
+    const userId = req.user.id; // Pega o ID do usuário logado
+    await taskService.deleteTask(id, userId);
     res.status(204).send();
   } catch (error) {
     console.error("Erro ao deletar tarefa:", error);

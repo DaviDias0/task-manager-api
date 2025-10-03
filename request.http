@@ -1,0 +1,67 @@
+### Arquivo de Requisições para a Task Manager API
+
+# Define a variável de host para o nosso ambiente local
+@host = http://localhost:3000
+
+# Define uma variável para o token JWT que receberemos
+@token = 
+
+######################################################
+# PASSO 1: REGISTRAR UM USUÁRIO DE TESTE (se ainda não tiver um)
+# Clique em "Send Request" abaixo para executar
+###
+POST {{host}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Usuario de Teste",
+  "email": "teste@email.com",
+  "password": "123"
+}
+
+
+######################################################
+# PASSO 2: FAZER LOGIN PARA OBTER O TOKEN
+# Clique em "Send Request" para executar
+###
+# @name loginRequest
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "teste@email.com",
+  "password": "123"
+}
+
+
+######################################################
+# PASSO 3: CRIAR UMA NOVA TAREFA (já autenticado)
+# ATENÇÃO: Primeiro, execute o PASSO 2 (login)
+# Depois, copie o token da resposta do login e cole na variável @token no topo do arquivo.
+# Depois, clique em "Send Request" abaixo.
+###
+POST {{host}}/tasks
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Minha Primeira Tarefa de Teste",
+  "description": "Testando a criação de tarefas"
+}
+
+
+######################################################
+# PASSO 4: TESTAR A EDIÇÃO (UPDATE) DA TAREFA
+# ATENÇÃO: Execute os passos 2 e 3 primeiro.
+# Coloque o ID da tarefa que foi criada no passo anterior na URL abaixo (substitua o 1).
+# Clique em "Send Request".
+###
+PATCH {{host}}/tasks/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Tarefa de Teste - Título ATUALIZADO",
+  "description": "A descrição também foi atualizada!",
+  "status": "done"
+}
