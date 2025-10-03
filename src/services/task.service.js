@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient(); // Instância do Prisma criada
+const prisma = require('../database/prismaClient');
 
 const findAllTasks = async (userId) => {
   const tasks = await prisma.task.findMany({
@@ -7,13 +6,14 @@ const findAllTasks = async (userId) => {
   });
   return tasks;
 };
-const createTask = async (taskData, userId) => { // <--- Adicione userId
+
+const createTask = async (taskData, userId) => {
   const { title, description } = taskData;
   const task = await prisma.task.create({
     data: {
       title,
       description,
-      authorId: userId, // <--- Associe o ID do autor
+      authorId: userId,
     },
   });
   return task;
@@ -37,6 +37,5 @@ module.exports = {
   findAllTasks,
   createTask,
   updateTask,
-  createTask,
   deleteTask,
 };
