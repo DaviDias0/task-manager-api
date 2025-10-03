@@ -19,17 +19,38 @@ const createTask = async (taskData, userId) => {
   return task;
 };
 
-const updateTask = async (id, taskData) => {
-  const task = await prisma.task.update({
-    where: { id: Number(id) },
-    data: taskData,
+// --- FUNÇÃO MODIFICADA ---
+const updateTask = async (taskId, userId, taskData) => {
+  // Primeiro, verifica se a tarefa que está sendo atualizada realmente pertence ao usuário logado
+  const task = await prisma.task.findFirst({
+    where: {
+      id: Number(taskId),
+      authorId: userId,
+    },
   });
-  return task;
+
+  // Se não encontrar a tarefa (ou ela não for do usuário), lança um erro
+  if (!task) {
+    throw new Error('Tarefa não encontrada ou não pertence ao usuário.');
+  }
+
+  // Se a tarefa for encontrada, prossegue com a atualização
+  const updatedTask = await prisma.task.update({
+    where: {
+      id: Number(taskId),
+    },
+    data: taskData, // taskData pode ser { title, description, status }
+  });
+  return updatedTask;
 };
 
-const deleteTask = async (id) => {
-  await prisma.task.delete({
-    where: { id: Number(id) },
+const deleteTask = async (taskId, userId) => {
+  // A mesma lógica de segurança se aplica aqui
+  await prisma.task.deleteMany({
+    where: {
+      id: Number(taskId),
+      authorId: userId, // Garante que só o dono pode deletar
+    },
   });
 };
 

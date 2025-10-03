@@ -9,7 +9,10 @@ app.use(express.json());
 
 const PORT = 3000;
 
+// Rotas PÚBLICAS de autenticação
 app.use('/auth', authRoutes);
+
+// Rotas PRIVADAS de tarefas
 app.use('/tasks', taskRoutes);
 
 app.listen(PORT, () => {
