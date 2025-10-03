@@ -7,14 +7,12 @@ const authRoutes = require('./routes/auth.routes');
 app.use(cors());
 app.use(express.json());
 
-const PORT = 3000;
-
 // Rotas PÚBLICAS de autenticação
 app.use('/auth', authRoutes);
 
 // Rotas PRIVADAS de tarefas
 app.use('/tasks', taskRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+app.listen(3000, () => {
+  console.log(`Servidor rodando na porta 3000`);
 });
