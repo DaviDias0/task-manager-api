@@ -2,7 +2,8 @@ const taskService = require('../services/task.service.js');
 
 const getAllTasks = async (req, res) => {
   try {
-    const tasks = await taskService.findAllTasks();
+    const userId = req.user.id;
+    const tasks = await taskService.findAllTasks(userId);
     res.status(200).json(tasks);
   } catch (error) {
     console.error("Mensagem de erro:", error);
@@ -13,7 +14,8 @@ const getAllTasks = async (req, res) => {
 
 const createTask = async (req, res) => {
   try {
-    const newTask = await taskService.createTask(req.body);
+    const userId = req.user.id; // <--- Pega o ID do usuário logado
+    const newTask = await taskService.createTask(req.body, userId); // <--- Passa para o serviço
     res.status(201).json(newTask);
   } catch (error) {
     console.error("Mensagem de erro:", error);
