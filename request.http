@@ -3,12 +3,11 @@
 # Define a variável de host para o nosso ambiente local
 @host = http://localhost:3000
 
-# Define uma variável para o token JWT que receberemos
-@token = 
+# Define uma variável para o token JWT. Cole o token aqui após fazer o login.
+@token = c-dAuDFQrdjS3hezqxDTNgW7AOlYk
 
 ######################################################
-# PASSO 1: REGISTRAR UM USUÁRIO DE TESTE (se ainda não tiver um)
-# Clique em "Send Request" abaixo para executar
+# 1. REGISTRAR UM USUÁRIO DE TESTE
 ###
 POST {{host}}/auth/register
 Content-Type: application/json
@@ -19,12 +18,9 @@ Content-Type: application/json
   "password": "123"
 }
 
-
 ######################################################
-# PASSO 2: FAZER LOGIN PARA OBTER O TOKEN
-# Clique em "Send Request" para executar
+# 2. FAZER LOGIN PARA OBTER O TOKEN
 ###
-# @name loginRequest
 POST {{host}}/auth/login
 Content-Type: application/json
 
@@ -33,35 +29,43 @@ Content-Type: application/json
   "password": "123"
 }
 
+######################################################
+# 3. LISTAR TODAS AS MINHAS TAREFAS (REQUER TOKEN)
+###
+GET {{host}}/tasks
+Authorization: Bearer {{token}}
+
 
 ######################################################
-# PASSO 3: CRIAR UMA NOVA TAREFA (já autenticado)
-# ATENÇÃO: Primeiro, execute o PASSO 2 (login)
-# Depois, copie o token da resposta do login e cole na variável @token no topo do arquivo.
-# Depois, clique em "Send Request" abaixo.
+# 4. CRIAR UMA NOVA TAREFA (REQUER TOKEN)
 ###
 POST {{host}}/tasks
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "title": "Minha Primeira Tarefa de Teste",
-  "description": "Testando a criação de tarefas"
+  "title": "Aprender a testar APIs",
+  "description": "Usar o REST Client para verificar os endpoints"
 }
 
 
 ######################################################
-# PASSO 4: TESTAR A EDIÇÃO (UPDATE) DA TAREFA
-# ATENÇÃO: Execute os passos 2 e 3 primeiro.
-# Coloque o ID da tarefa que foi criada no passo anterior na URL abaixo (substitua o 1).
-# Clique em "Send Request".
+# 5. ATUALIZAR UMA TAREFA (REQUER TOKEN)
+# Lembre-se de substituir o '1' pelo ID da tarefa que você quer editar
 ###
 PATCH {{host}}/tasks/1
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "title": "Tarefa de Teste - Título ATUALIZADO",
-  "description": "A descrição também foi atualizada!",
+  "title": "Aprender a testar APIs (Atualizado)",
   "status": "done"
 }
+
+
+######################################################
+# 6. DELETAR UMA TAREFA (REQUER TOKEN)
+# Lembre-se de substituir o '1' pelo ID da tarefa que você quer deletar
+###
+DELETE {{host}}/tasks/1
+Authorization: Bearer {{token}}
