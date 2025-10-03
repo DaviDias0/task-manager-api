@@ -1,5 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
-
+const prisma = new PrismaClient(); // Instância do Prisma criada
 
 const findAllTasks = async () => {
   const tasks = await prisma.task.findMany();

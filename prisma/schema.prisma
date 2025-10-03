@@ -7,11 +7,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  password  String
+  tasks     Task[] // Um usuário pode ter várias tarefas
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Task {
   id          Int      @id @default(autoincrement())
   title       String
-  description String?  // O '?' torna o campo opcional
+  description String?
   status      String   @default("pending")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  // Relacionamento: a tarefa pertence a um usuário
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
 }
