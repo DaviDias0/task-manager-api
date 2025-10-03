@@ -1,13 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const taskController = require('../controllers/task.controller');
-const authenticateToken = require('../middleware/auth.middleware');
+const authController = require('../controllers/auth.controller');
 
-router.use(authenticateToken);
-
-router.get('/', taskController.getAllTasks);
-router.post('/', taskController.createTask);
-router.patch('/:id', taskController.updateTask);
-router.delete('/:id', taskController.deleteTask);
+router.post('/register', authController.register);
+router.post('/login', authController.login);
 
 module.exports = router;
