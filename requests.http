@@ -1,0 +1,56 @@
+@host = http://localhost:3000
+
+@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU5OTY1MTU4LCJleHAiOjE3NjAwNTE1NTh9.FBh4y5glGPp9T4iAtLiydUisfMRey_GBF2DvZafBXuA
+
+######################################################
+
+POST {{host}}/auth/register
+Content-Type: application/json
+
+{
+"name": "Usuario de Teste",
+"email": "teste@email.com",
+"password": "password123"
+}
+
+######################################################
+
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+"email": "teste@email.com",
+"password": "password123"
+}
+
+######################################################
+
+GET {{host}}/tasks
+Authorization: Bearer {{token}}
+
+######################################################
+
+POST {{host}}/tasks
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+"title": "Aprender a testar APIs",
+"description": "Usar o REST Client para verificar os endpoints"
+}
+
+######################################################
+
+PATCH {{host}}/tasks/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+"title": "Aprender a testar APIs (Atualizado)",
+"status": "DONE"
+}
+
+######################################################
+
+DELETE {{host}}/tasks/1
+Authorization: Bearer {{token}}
