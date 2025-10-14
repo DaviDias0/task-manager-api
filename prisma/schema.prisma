@@ -1,3 +1,5 @@
+// Este é o arquivo completo e corrigido para você copiar e colar
+
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
@@ -18,23 +20,30 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
+enum Status {
+  PENDENTE
+  EM_ANDAMENTO
+  CONCLUIDA
+}
+
+enum Priority {
+  BAIXA
+  MEDIA
+  ALTA
+}
+
 model Task {
   id          Int       @id @default(autoincrement())
   title       String
   description String?
-  status      Status    @default(PENDING)
+  status      Status    @default(PENDENTE) // Agora corresponde ao enum Status
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id])
 
-  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId    Int
-
-  @@index([authorId])
-}
-
-enum Status {
-  PENDING
-  IN_PROGRESS
-  DONE
+  // NOVOS CAMPOS
+  priority    Priority  @default(MEDIA)
+  dueDate     DateTime?
 }

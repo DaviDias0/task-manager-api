@@ -1,14 +1,18 @@
-    const express = require('express');
-    const router = express.Router();
-    const taskController = require('../controllers/task.controller');
-    const authenticateToken = require('../middleware/auth.middleware');
-    
-    router.use(authenticateToken);
-    
-    router.get('/', taskController.getAllTasks);
-    router.post('/', taskController.createTask);
-    router.patch('/:id', taskController.updateTask);
-    router.delete('/:id', taskController.deleteTask);
-    
-    module.exports = router;
-    
+// src/routes/task.routes.js
+
+const { Router } = require('express');
+const TaskController = require('../controllers/task.controller');
+// A CORREÇÃO ESTÁ AQUI: o nome da pasta agora está no singular
+const authMiddleware = require('../middleware/auth.middleware');
+
+const router = Router();
+
+// Aplica o middleware de autenticação a todas as rotas de tarefas
+router.use('/tasks', authMiddleware);
+
+router.post('/tasks', TaskController.create);
+router.get('/tasks', TaskController.findByUser);
+router.put('/tasks/:id', TaskController.update);
+router.delete('/tasks/:id', TaskController.delete);
+
+module.exports = router;
