@@ -1,50 +1,47 @@
-const taskService = require('../services/task.service.js');
+// src/controllers/task.controller.js
 
-const getAllTasks = async (req, res, next) => {
-  try {
-    const userId = req.user.id;
-    const tasks = await taskService.findAllTasks(userId);
-    res.status(200).json(tasks);
-  } catch (error) {
-    next(error);
+const TaskService = require('../services/task.service');
+
+class TaskController {
+  async create(req, res) {
+    try {
+      const task = await TaskService.create(req.user.id, req.body);
+      res.status(201).json(task);
+    } catch (error) {
+      console.error("ERRO AO CRIAR TAREFA:", error);
+      res.status(500).json({ message: 'Erro ao criar tarefa.' });
+    }
   }
-};
 
-const createTask = async (req, res, next) => {
-  try {
-    const userId = req.user.id;
-    const newTask = await taskService.createTask(req.body, userId);
-    res.status(201).json(newTask);
-  } catch (error) {
-    next(error);
+  async findByUser(req, res) {
+    try {
+      const tasks = await TaskService.findByUser(req.user.id);
+      res.status(200).json(tasks);
+    } catch (error) {
+      console.error("ERRO AO BUSCAR TAREFAS:", error);
+      res.status(500).json({ message: 'Erro ao buscar tarefas.' });
+    }
   }
-};
 
-const updateTask = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const userId = req.user.id;
-    const result = await taskService.updateTask(id, userId, req.body);
-    res.status(200).json(result);
-  } catch (error) {
-    next(error);
+  async update(req, res) {
+    try {
+      const task = await TaskService.update(req.params.id, req.body);
+      res.status(200).json(task);
+    } catch (error) {
+      console.error("ERRO AO ATUALIZAR TAREFA:", error);
+      res.status(500).json({ message: 'Erro ao atualizar tarefa.' });
+    }
   }
-};
 
-const deleteTask = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const userId = req.user.id;
-    await taskService.deleteTask(id, userId);
-    res.status(204).send();
-  } catch (error) {
-    next(error);
+  async delete(req, res) {
+    try {
+      await TaskService.delete(req.params.id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("ERRO AO DELETAR TAREFA:", error);
+      res.status(500).json({ message: 'Erro ao deletar tarefa.' });
+    }
   }
-};
+}
 
-module.exports = {
-  getAllTasks,
-  createTask,
-  updateTask,
-  deleteTask,
-};
+module.exports = new TaskController();

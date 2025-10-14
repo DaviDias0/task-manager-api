@@ -1,53 +1,48 @@
-const taskRepository = require('../repositories/task.repository.js');
-const prisma = require('../database/prismaClient'); // Importante para buscar a tarefa atualizada
+// src/services/task.service.js
 
-const findAllTasks = async (userId) => {
-  return await taskRepository.findAllTasksByAuthor(userId);
-};
+const TaskRepository = require('../repositories/task.repository');
+const prisma = require('../lib/prisma');
 
-const createTask = async (taskData, userId) => {
-  if (!taskData.title) {
-    const error = new Error("Título é obrigatório.");
-    error.statusCode = 400;
-    throw error;
-  }
-  return await taskRepository.createTask(taskData, userId);
-};
-
-// --- FUNÇÃO CORRIGIDA ---
-const updateTask = async (taskId, userId, taskData) => {
-  // Lógica de negócio: Se um status foi enviado, converte para o formato do Enum
-  if (taskData.status) {
-    // Converte "in-progress" para "IN_PROGRESS" e "done" para "DONE"
-    taskData.status = taskData.status.toUpperCase().replace('-', '_');
+class TaskService {
+  async create(userId, taskData) {
+    const { title, description, priority, dueDate } = taskData;
+    return prisma.task.create({
+      data: {
+        title,
+        description,
+        userId,
+        priority,
+        dueDate: dueDate ? new Date(dueDate) : null,
+      },
+    });
   }
 
-  const result = await taskRepository.updateTask(taskId, userId, taskData);
-
-  if (result.count === 0) {
-    const error = new Error('Tarefa não encontrada ou não pertence ao usuário.');
-    error.statusCode = 404;
-    throw error;
+  async findByUser(userId) {
+    return TaskRepository.findAllTasksByUser(userId);
   }
 
-  // Boa prática: Após atualizar, busca e retorna o registro completo para o frontend
-  const updatedTask = await prisma.task.findUnique({ where: { id: Number(taskId) } });
-  return updatedTask;
-};
-
-const deleteTask = async (taskId, userId) => {
-  const result = await taskRepository.deleteTask(taskId, userId);
-  if (result.count === 0) {
-    const error = new Error('Tarefa não encontrada ou não pertence ao usuário.');
-    error.statusCode = 404;
-    throw error;
+  async update(id, taskData) {
+    const { title, description, status, priority, dueDate } = taskData;
+    return prisma.task.update({
+      where: { id: Number(id) },
+      data: {
+        title,
+        description,
+        status,
+        priority,
+        dueDate: dueDate ? new Date(dueDate) : null,
+      },
+    });
   }
-  return result;
-};
 
-module.exports = {
-  findAllTasks,
-  createTask,
-  updateTask,
-  deleteTask,
-};
+  async delete(id) {
+    return prisma.task.update({
+      where: { id: Number(id) },
+      data: {
+        deletedAt: new Date(),
+      },
+    });
+  }
+}
+
+module.exports = new TaskService();

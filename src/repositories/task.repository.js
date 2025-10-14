@@ -1,47 +1,24 @@
-const prisma = require('../database/prismaClient');
+// src/repositories/task.repository.js
 
-const findAllTasksByAuthor = async (userId) => {
-  return await prisma.task.findMany({
-    where: { 
-      authorId: userId,
+const prisma = require('../lib/prisma');
+
+/**
+ * Busca todas as tarefas de um usuário que não foram deletadas.
+ * @param {number} userId - O ID do usuário logado.
+ * @returns {Promise<Task[]>} Uma lista de tarefas.
+ */
+const findAllTasksByUser = async (userId) => {
+  return prisma.task.findMany({
+    where: {
+      userId: userId, // Corrigido para usar 'userId'
       deletedAt: null,
     },
     orderBy: {
       createdAt: 'desc',
-    }
-  });
-};
-
-const createTask = async (data, userId) => {
-  return await prisma.task.create({
-    data: {
-      title: data.title,
-      description: data.description,
-      authorId: userId,
     },
   });
 };
 
-const updateTask = async (taskId, userId, data) => {
-  return await prisma.task.updateMany({
-    where: {
-      id: Number(taskId),
-      authorId: userId,
-    },
-    data: data,
-  });
+module.exports = {
+  findAllTasksByUser,
 };
-
-const deleteTask = async (taskId, userId) => {
-  return await prisma.task.updateMany({
-    where: {
-      id: Number(taskId),
-      authorId: userId,
-    },
-    data: {
-      deletedAt: new Date(),
-    },
-  });
-};
-
-module.exports = { findAllTasksByAuthor, createTask, updateTask, deleteTask };
