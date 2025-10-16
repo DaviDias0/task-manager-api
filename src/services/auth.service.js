@@ -8,7 +8,6 @@ class AuthService {
   async register(userData) {
     const { name, email, password } = userData;
 
-    // Verifica se o usuário já existe
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       throw new Error('Este e-mail já está em uso.');
@@ -41,14 +40,19 @@ class AuthService {
       throw new Error('Credenciais inválidas.');
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
-      expiresIn: '1d', // Token expira em 1 dia
+    const tokenPayload = { 
+      id: user.id, 
+      email: user.email, 
+      role: user.role
+    };
+
+    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, {
+      expiresIn: '1d',
     });
 
     return { token };
   }
 
-  // --- NOVA FUNÇÃO ADICIONADA ---
   async getProfile(userId) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -58,9 +62,21 @@ class AuthService {
       throw new Error('Usuário não encontrado.');
     }
 
-    // Remove a senha do objeto antes de retorná-lo
     delete user.password;
     return user;
+  }
+
+  // --- NOVA FUNÇÃO PARA ADMINS ---
+  async getAllUsers() {
+    const users = await prisma.user.findMany();
+
+    // Mapeia a lista de usuários para remover a senha de cada um
+    const usersWithoutPasswords = users.map(user => {
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword;
+    });
+
+    return usersWithoutPasswords;
   }
 }
 
