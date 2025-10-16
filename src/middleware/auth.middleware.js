@@ -1,4 +1,4 @@
-// src/middlewares/auth.middleware.js
+// src/middleware/auth.middleware.js
 
 const jwt = require('jsonwebtoken');
 
@@ -13,10 +13,14 @@ function authMiddleware(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const { id, email } = decoded;
+    
+    // --- A CORREÇÃO CRÍTICA ESTÁ AQUI ---
+    // Agora extraímos o 'role' do token decodificado
+    const { id, email, role } = decoded;
 
-    // Adiciona os dados do usuário ao objeto 'req' para uso posterior
-    req.user = { id, email };
+    // E adicionamos o 'role' ao objeto 'req.user'
+    req.user = { id, email, role };
+    // ------------------------------------
 
     return next();
   } catch (error) {

@@ -6,7 +6,6 @@ class AuthController {
   async register(req, res) {
     try {
       const user = await AuthService.register(req.body);
-      // Não retorna a senha no response
       const { password, ...userWithoutPassword } = user;
       res.status(201).json(userWithoutPassword);
     } catch (error) {
@@ -23,14 +22,22 @@ class AuthController {
     }
   }
 
-  // --- NOVA FUNÇÃO ADICIONADA ---
   async getProfile(req, res) {
     try {
-      // O ID do usuário (req.user.id) é adicionado à requisição pelo authMiddleware
       const userProfile = await AuthService.getProfile(req.user.id);
       res.status(200).json(userProfile);
     } catch (error) {
       res.status(404).json({ message: error.message });
+    }
+  }
+
+  // --- NOVA FUNÇÃO PARA ADMINS ---
+  async getAllUsers(req, res) {
+    try {
+      const users = await AuthService.getAllUsers();
+      res.status(200).json(users);
+    } catch (error) {
+      res.status(500).json({ message: 'Erro ao buscar usuários.' });
     }
   }
 }
