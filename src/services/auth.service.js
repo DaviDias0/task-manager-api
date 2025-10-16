@@ -7,6 +7,13 @@ const jwt = require('jsonwebtoken');
 class AuthService {
   async register(userData) {
     const { name, email, password } = userData;
+
+    // Verifica se o usuário já existe
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      throw new Error('Este e-mail já está em uso.');
+    }
+
     const hashedPassword = await bcrypt.hash(password, 8);
 
     const user = await prisma.user.create({
@@ -39,6 +46,21 @@ class AuthService {
     });
 
     return { token };
+  }
+
+  // --- NOVA FUNÇÃO ADICIONADA ---
+  async getProfile(userId) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new Error('Usuário não encontrado.');
+    }
+
+    // Remove a senha do objeto antes de retorná-lo
+    delete user.password;
+    return user;
   }
 }
 
