@@ -17,8 +17,10 @@ class TaskService {
     });
   }
 
-  async findByUser(userId) {
-    return TaskRepository.findAllTasksByUser(userId);
+  // FUNÇÃO ATUALIZADA AQUI
+  async findByUser(userId, sortBy, order) {
+    // Passa os parâmetros de ordenação para a camada de repositório
+    return TaskRepository.findAllTasksByUser(userId, sortBy, order);
   }
 
   async update(id, taskData) {

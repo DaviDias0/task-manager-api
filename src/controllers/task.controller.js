@@ -13,9 +13,12 @@ class TaskController {
     }
   }
 
+  // FUNÇÃO ATUALIZADA AQUI
   async findByUser(req, res) {
     try {
-      const tasks = await TaskService.findByUser(req.user.id);
+      // Extrai os parâmetros de ordenação da query string da URL (ex: /tasks?sortBy=dueDate)
+      const { sortBy, order } = req.query;
+      const tasks = await TaskService.findByUser(req.user.id, sortBy, order);
       res.status(200).json(tasks);
     } catch (error) {
       console.error("ERRO AO BUSCAR TAREFAS:", error);
