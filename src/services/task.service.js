@@ -17,29 +17,31 @@ class TaskService {
     });
   }
 
-  // FUNÇÃO ATUALIZADA AQUI
   async findByUser(userId, sortBy, order) {
-    // Passa os parâmetros de ordenação para a camada de repositório
     return TaskRepository.findAllTasksByUser(userId, sortBy, order);
   }
 
   async update(id, taskData) {
-    const { title, description, status, priority, dueDate } = taskData;
+    const taskId = Number(id);
+    if (isNaN(taskId)) { throw new Error('ID da tarefa inválido.'); }
+    // Remove 'id' e 'userId' do objeto de dados para evitar atualização indevida
+    const { id: taskIdFromData, userId, ...dataToUpdate } = taskData;
     return prisma.task.update({
-      where: { id: Number(id) },
+      where: { id: taskId },
       data: {
-        title,
-        description,
-        status,
-        priority,
-        dueDate: dueDate ? new Date(dueDate) : null,
+        ...dataToUpdate,
+        // Garante que a data seja salva corretamente
+        dueDate: dataToUpdate.dueDate ? new Date(dataToUpdate.dueDate) : null,
       },
     });
   }
 
   async delete(id) {
+    const taskId = Number(id);
+    if (isNaN(taskId)) { throw new Error('ID da tarefa inválido.'); }
+    // Implementação de Soft Delete
     return prisma.task.update({
-      where: { id: Number(id) },
+      where: { id: taskId },
       data: {
         deletedAt: new Date(),
       },

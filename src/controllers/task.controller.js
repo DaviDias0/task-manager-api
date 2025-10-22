@@ -13,10 +13,8 @@ class TaskController {
     }
   }
 
-  // FUNÇÃO ATUALIZADA AQUI
   async findByUser(req, res) {
     try {
-      // Extrai os parâmetros de ordenação da query string da URL (ex: /tasks?sortBy=dueDate)
       const { sortBy, order } = req.query;
       const tasks = await TaskService.findByUser(req.user.id, sortBy, order);
       res.status(200).json(tasks);
@@ -28,6 +26,15 @@ class TaskController {
 
   async update(req, res) {
     try {
+      // Garante que o usuário só possa editar suas próprias tarefas (verificação extra)
+      const taskToUpdate = await prisma.task.findUnique({ where: { id: Number(req.params.id) } });
+      if (!taskToUpdate) {
+        return res.status(404).json({ message: 'Tarefa não encontrada.' });
+      }
+      if (taskToUpdate.userId !== req.user.id) {
+         return res.status(403).json({ message: 'Você não tem permissão para editar esta tarefa.' });
+      }
+
       const task = await TaskService.update(req.params.id, req.body);
       res.status(200).json(task);
     } catch (error) {
@@ -38,6 +45,15 @@ class TaskController {
 
   async delete(req, res) {
     try {
+      // Garante que o usuário só possa deletar suas próprias tarefas
+      const taskToDelete = await prisma.task.findUnique({ where: { id: Number(req.params.id) } });
+       if (!taskToDelete) {
+        return res.status(404).json({ message: 'Tarefa não encontrada.' });
+      }
+      if (taskToDelete.userId !== req.user.id) {
+         return res.status(403).json({ message: 'Você não tem permissão para deletar esta tarefa.' });
+      }
+
       await TaskService.delete(req.params.id);
       res.status(204).send();
     } catch (error) {
@@ -46,5 +62,8 @@ class TaskController {
     }
   }
 }
+
+// IMPORTANTE: Precisamos importar o prisma aqui para as verificações de segurança
+const prisma = require('../lib/prisma'); 
 
 module.exports = new TaskController();
