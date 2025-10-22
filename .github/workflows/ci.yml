@@ -1,0 +1,31 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [ main ] # Roda quando envia direto pra main
+  pull_request:
+    branches: [ main ] # Roda quando abre/atualiza PR para a main
+  # workflow_dispatch: # Opcional: permite rodar manualmente
+
+jobs:
+  build: # Nome do "trabalho" que vamos fazer
+    runs-on: ubuntu-latest # Máquina virtual que vai rodar o código
+
+    steps:
+    - name: Checkout repository # Baixa o código do seu repo
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js # Configura o ambiente Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18' # Use a mesma versão do seu Dockerfile
+
+    - name: Install dependencies # Roda npm install
+      run: npm ci # 'ci' é mais rápido e seguro para CI
+
+    - name: Generate Prisma Client # Garante que o Prisma está pronto
+      run: npx prisma generate
+
+    # --- Futuramente, adicionaremos o comando para rodar os testes aqui ---
+    # - name: Run tests
+    #   run: npm test
