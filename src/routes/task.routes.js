@@ -2,12 +2,11 @@
 
 const { Router } = require('express');
 const TaskController = require('../controllers/task.controller');
-// A CORREÇÃO ESTÁ AQUI: o nome da pasta agora está no singular
 const authMiddleware = require('../middleware/auth.middleware');
 
 const router = Router();
 
-// Aplica o middleware de autenticação a todas as rotas de tarefas
+// Aplica autenticação a todas as rotas abaixo
 router.use('/tasks', authMiddleware);
 
 router.post('/tasks', TaskController.create);

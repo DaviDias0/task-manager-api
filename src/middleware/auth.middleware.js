@@ -9,20 +9,21 @@ function authMiddleware(req, res, next) {
     return res.status(401).json({ message: 'Token não fornecido.' });
   }
 
-  const [, token] = authorization.split(' ');
+  // Verifica se o formato é Bearer token
+  const parts = authorization.split(' ');
+  if (parts.length !== 2 || parts[0] !== 'Bearer') {
+    return res.status(401).json({ message: 'Formato de token inválido.' });
+  }
+  const token = parts[1];
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
-    // --- A CORREÇÃO CRÍTICA ESTÁ AQUI ---
-    // Agora extraímos o 'role' do token decodificado
-    const { id, email, role } = decoded;
+    const { id, email, role } = decoded; // Extrai id, email e role
 
-    // E adicionamos o 'role' ao objeto 'req.user'
+    // Adiciona os dados decodificados ao objeto req para uso posterior
     req.user = { id, email, role };
-    // ------------------------------------
 
-    return next();
+    return next(); // Continua para a próxima função (middleware ou controller)
   } catch (error) {
     return res.status(401).json({ message: 'Token inválido ou expirado.' });
   }

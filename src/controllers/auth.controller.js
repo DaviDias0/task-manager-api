@@ -31,13 +31,30 @@ class AuthController {
     }
   }
 
-  // --- NOVA FUNÇÃO PARA ADMINS ---
   async getAllUsers(req, res) {
     try {
       const users = await AuthService.getAllUsers();
       res.status(200).json(users);
     } catch (error) {
+      console.error("ERRO AO BUSCAR USUÁRIOS:", error);
       res.status(500).json({ message: 'Erro ao buscar usuários.' });
+    }
+  }
+
+  async deleteUser(req, res) {
+    try {
+      const userIdToDelete = req.params.id;
+      await AuthService.deleteUser(userIdToDelete);
+      res.status(204).send();
+    } catch (error) {
+      console.error("ERRO AO DELETAR USUÁRIO:", error);
+      if (error.message === 'Usuário não encontrado.') {
+        return res.status(404).json({ message: error.message });
+      }
+      if (error.message.includes('tarefas associadas') || error.message.includes('ID de usuário inválido')) {
+        return res.status(400).json({ message: error.message });
+      }
+      res.status(500).json({ message: 'Erro interno ao deletar usuário.' });
     }
   }
 }
