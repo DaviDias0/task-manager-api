@@ -6,7 +6,8 @@ const authMiddleware = require('../middleware/auth.middleware');
 
 const router = Router();
 
-// Aplica autenticação a todas as rotas abaixo
+// --- ROTAS DE TAREFAS (Todas requerem login) ---
+// O middleware é aplicado a todas as rotas definidas ABAIXO neste router
 router.use('/tasks', authMiddleware);
 
 router.post('/tasks', TaskController.create);

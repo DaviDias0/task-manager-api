@@ -3,27 +3,28 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const morgan = require('morgan');
-const authRoutes = require('./routes/auth.routes');
-const taskRoutes = require('./routes/task.routes');
+const morgan = require('morgan'); // Logger
+const authRoutes = require('./routes/auth.routes'); // Auth and Admin routes
+const taskRoutes = require('./routes/task.routes'); // Task routes
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors());
-app.use(express.json());
-app.use(morgan('dev'));
+// --- Middlewares Essenciais (Ordem CRÍTICA!) ---
+app.use(cors()); // 1. CORS deve vir primeiro ou logo no início
+app.use(express.json()); // 2. ESSENCIAL para ler req.body (PRECISA vir ANTES das rotas que usam req.body)
+app.use(morgan('dev')); // 3. Logger (ótimo para depuração)
 
-// Registra as rotas
+// --- Rotas ---
+// 4. Registra as rotas de autenticação e admin
 app.use(authRoutes);
+// 5. Registra as rotas de tarefas
 app.use(taskRoutes);
 
-// Tratamento de Rota Não Encontrada (404)
+// --- Tratamento de Erro (Deve vir POR ÚLTIMO) ---
 app.use((req, res, next) => {
-  res.status(404).json({ message: 'Rota não encontrada.' });
+  res.status(404).json({ message: `Rota não encontrada: ${req.method} ${req.originalUrl}` });
 });
-
-// Tratamento Genérico de Erros (500)
 app.use((err, req, res, next) => {
   console.error("ERRO NÃO TRATADO:", err.stack);
   res.status(500).json({ message: 'Erro interno no servidor.' });
