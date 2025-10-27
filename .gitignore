@@ -1,5 +1,9 @@
+# .dockerignore
 node_modules
-# Keep environment variables out of version control
-.env
-
-/generated/prisma
+npm-debug.log
+Dockerfile
+.dockerignore
+.git
+.gitignore
+*.env
+uploads # Se você mapear volumes, pode ignorar, senão NÃO ignore

@@ -22,7 +22,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   tasks     Task[]
-
+  posts     Post[] // <-- Adicione esta linha para a relação um-para-muitos
+profileImageUrl String?  // <-- ADICIONE ESTA LINHA
   // NOVO CAMPO ADICIONADO AQUI
   role      Role     @default(USER) // Por padrão, todo novo usuário é um 'USER'
 }
@@ -52,4 +53,18 @@ model Task {
 
   priority    Priority  @default(MEDIA)
   dueDate     DateTime?
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String   // Título obrigatório
+  content   String   // Conteúdo obrigatório (para textos maiores, o tipo String geralmente é suficiente em Postgres)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  authorId  Int      // Chave estrangeira para o User
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade) // Relacionamento com User
+                     // onDelete: Cascade significa que se o User for deletado, seus Posts também serão.
+
+  @@map("posts") // Mapeia para a tabela "posts" no banco de dados (opcional, mas boa prática)
 }
